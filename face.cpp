@@ -39,7 +39,7 @@ int main( int argc, const char** argv )
 	detectAndDisplay( frame );
 
 	// 4. Save Result Image
-	imwrite( "output14.jpg", frame );
+	imwrite( "output13.jpg", frame );
 
 	return 0;
 }
@@ -64,6 +64,8 @@ void detectAndDisplay( Mat frame )
 	for( int i = 0; i < faces.size(); i++ )
 	{
 		rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 0, 255, 0 ), 2);
+    std::cout << faces[i].x << std::endl;
+		std::cout << faces[i].y << std::endl << std::endl;
 	}
 
 }
