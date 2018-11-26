@@ -14,14 +14,14 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
-
+#include <string>
 
 using namespace std;
 using namespace cv;
 /** Function Headers */
-void detectAndDisplay( Mat frame );
-
+void detectAndDisplay( Mat frame , string filename);
+bool checkMatch(string topleftx, string toplefty, string bottomrightx, string bottomrighty, std::vector<Rect> face);
+void calcF1(std::vector<Rect> faces, string csv);
 /** Global variables */
 String cascade_name = "frontalface.xml";
 CascadeClassifier cascade;
@@ -36,16 +36,16 @@ int main( int argc, const char** argv ) {
 	if( !cascade.load( cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
 
 	// 3. Detect Faces and Display Result
-	detectAndDisplay( frame );
+	detectAndDisplay( frame , argv[1]);
 
 	// 4. Save Result Image
-	imwrite( "output13.jpg", frame );
+	imwrite( "output.jpg", frame );
 
 	return 0;
 }
 
 /** @function detectAndDisplay */
-void detectAndDisplay( Mat frame ) {
+void detectAndDisplay( Mat frame , string filename) {
 	std::vector<Rect> faces;
 	Mat frame_gray;
 
@@ -63,8 +63,25 @@ void detectAndDisplay( Mat frame ) {
 	for( int i = 0; i < faces.size(); i++ ) {
 		rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 0, 255, 0 ), 2);
 	}
+  calcF1(faces, filename);
 
-	ifstream ip("dart5coords.csv");
+}
+
+bool checkMatch(string topleftx, string toplefty, string bottomrightx, string bottomrighty, Rect		 face) {
+  if (abs(stoi(topleftx) - face.x) < 50 && abs(stoi(toplefty) - face.y) < 50 \
+      && abs(stoi(bottomrightx) - (face.x + face.width)) < 50 && abs(stoi(bottomrighty) - (face.y + face.height)) < 50) {
+		return true;
+	} else {
+	 	return false;
+	}
+}
+
+void calcF1(std::vector<Rect> faces, string csv) {
+
+	string subname = csv.substr(10, csv.size() - 14);
+	string csvname = subname + "coords.csv";
+
+	ifstream ip(csvname);
 
 	if(!ip.is_open()) std::cout << "Error; File Open" << '\n';
 
@@ -73,21 +90,35 @@ void detectAndDisplay( Mat frame ) {
 	string bottomrightx;
 	string bottomrighty;
 
-  int numfaces = 0;
+	double numfaces = 0;
+	double truepositives = 0;
+  double falsenegatives = 0;
+	double falsepositives = 0;
+
 	while(ip.good()) {
 		getline(ip, topleftx, ',');
 		getline(ip, toplefty, ',');
 		getline(ip, bottomrightx, ',');
 		getline(ip, bottomrighty, '\n');
-    numfaces++;
 
-		for (int x = 0; x < faces.size(); x++) {
-			
+		if (ip.eof()) break;
+		numfaces++;
+
+		for (int i = 0; i < faces.size(); i++) {
+			if (checkMatch(topleftx, toplefty, bottomrightx, bottomrighty, faces[i])) {
+				truepositives++;
+			}
 		}
-		std::cout << topleftx << toplefty << bottomrightx << bottomrighty << std::endl;
 	}
+  falsepositives = faces.size() - truepositives;
+	falsenegatives = numfaces - truepositives;
+
+	double f1score = 2*truepositives/(2*truepositives + falsenegatives + falsepositives);
+
+	cout << "True number of faces: " << numfaces << endl << "True Positives: " \
+	          << truepositives << endl << "TPR: " << truepositives/numfaces << endl \
+						<< "F1 Score: " << f1score << endl;
 
 	ip.close();
-
 
 }
