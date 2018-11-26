@@ -13,11 +13,12 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
+#include <fstream>
 #include <stdio.h>
+
 
 using namespace std;
 using namespace cv;
-
 /** Function Headers */
 void detectAndDisplay( Mat frame );
 
@@ -27,8 +28,7 @@ CascadeClassifier cascade;
 
 
 /** @function main */
-int main( int argc, const char** argv )
-{
+int main( int argc, const char** argv ) {
        // 1. Read Input Image
 	Mat frame = imread(argv[1], CV_LOAD_IMAGE_COLOR);
 
@@ -45,8 +45,7 @@ int main( int argc, const char** argv )
 }
 
 /** @function detectAndDisplay */
-void detectAndDisplay( Mat frame )
-{
+void detectAndDisplay( Mat frame ) {
 	std::vector<Rect> faces;
 	Mat frame_gray;
 
@@ -61,11 +60,34 @@ void detectAndDisplay( Mat frame )
 	std::cout << faces.size() << std::endl;
 
        // 4. Draw box around faces found
-	for( int i = 0; i < faces.size(); i++ )
-	{
+	for( int i = 0; i < faces.size(); i++ ) {
 		rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 0, 255, 0 ), 2);
-    std::cout << faces[i].x << std::endl;
-		std::cout << faces[i].y << std::endl << std::endl;
 	}
+
+	ifstream ip("dart5coords.csv");
+
+	if(!ip.is_open()) std::cout << "Error; File Open" << '\n';
+
+	string topleftx;
+	string toplefty;
+	string bottomrightx;
+	string bottomrighty;
+
+  int numfaces = 0;
+	while(ip.good()) {
+		getline(ip, topleftx, ',');
+		getline(ip, toplefty, ',');
+		getline(ip, bottomrightx, ',');
+		getline(ip, bottomrighty, '\n');
+    numfaces++;
+
+		for (int x = 0; x < faces.size(); x++) {
+			
+		}
+		std::cout << topleftx << toplefty << bottomrightx << bottomrighty << std::endl;
+	}
+
+	ip.close();
+
 
 }
