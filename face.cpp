@@ -23,7 +23,7 @@ void detectAndDisplay( Mat frame , string filename);
 bool checkMatch(string topleftx, string toplefty, string bottomrightx, string bottomrighty, std::vector<Rect> face);
 void calcF1(std::vector<Rect> faces, string csv);
 /** Global variables */
-String cascade_name = "frontalface.xml";
+String cascade_name = "cascade.xml";
 CascadeClassifier cascade;
 
 
