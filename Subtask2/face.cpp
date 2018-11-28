@@ -68,8 +68,8 @@ void detectAndDisplay( Mat frame , string filename) {
 }
 
 bool checkMatch(string topleftx, string toplefty, string bottomrightx, string bottomrighty, Rect		 face) {
-  if (abs(stoi(topleftx) - face.x) < 50 && abs(stoi(toplefty) - face.y) < 50 \
-      && abs(stoi(bottomrightx) - (face.x + face.width)) < 50 && abs(stoi(bottomrighty) - (face.y + face.height)) < 50) {
+  if (abs(stoi(topleftx) - face.x) < 100 && abs(stoi(toplefty) - face.y) < 100 \
+      && abs(stoi(bottomrightx) - (face.x + face.width)) < 100 && abs(stoi(bottomrighty) - (face.y + face.height)) < 100) {
 		return true;
 	} else {
 	 	return false;
@@ -107,6 +107,7 @@ void calcF1(std::vector<Rect> faces, string csv) {
 		for (int i = 0; i < faces.size(); i++) {
 			if (checkMatch(topleftx, toplefty, bottomrightx, bottomrighty, faces[i])) {
 				truepositives++;
+				break;
 			}
 		}
 	}
