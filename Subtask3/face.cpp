@@ -73,8 +73,11 @@ int main( int argc, const char** argv ) {
 	/// Total Gradient (approximate)
 	addWeighted( abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad );
 
+	Mat dest;
+	threshold(grad, dest, 100, 0, 3);
+
 	// 4. Save Result Image
-	imwrite( "output.jpg", grad );
+	imwrite( "output1.jpg", dest );
 
 	return 0;
 }
