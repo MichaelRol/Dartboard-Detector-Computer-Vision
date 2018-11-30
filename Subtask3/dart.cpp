@@ -73,7 +73,7 @@ Mat prepImage(Mat frame) {
 Mat getGradDir(Mat frame_gray) {
 	int scale = 1;
 	int delta = 0;
-	int ddepth = CV_16S;
+	int ddepth = CV_32F;
 
 	int c;
   double pi = 3.1415926535897;
@@ -95,8 +95,8 @@ Mat getGradDir(Mat frame_gray) {
 
 	for (int x = 0; x < frame_gray.size().width; x++) {
 		for (int y = 0; y < frame_gray.size().height; y++) {
-			if (grad_y.at<uchar>(y, x) != 0) {
-				gradDir.at<float>(y, x) = atan((float)grad_x.at<uchar>(y, x)/(float)grad_y.at<uchar>(y, x));
+			if (grad_y.at<float>(y, x) != 0) {
+				gradDir.at<float>(y, x) = atan2(grad_x.at<float>(y, x),grad_y.at<float>(y, x));
 			} else {
 				gradDir.at<float>(y, x) = pi/2;
 			}
