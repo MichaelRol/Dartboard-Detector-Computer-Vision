@@ -73,6 +73,12 @@ int main( int argc, const char** argv ) {
 	/// Total Gradient (approximate)
 	addWeighted( abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad );
 
+  //get the magnitude
+	// Mat magnitude
+	// Mat angle
+	// cartToPolar(grad_x,grad_y,magnitude,angle,0);
+	// 
+
 	Mat dest;
 	threshold(grad, dest, 100, 0, 3);
 
