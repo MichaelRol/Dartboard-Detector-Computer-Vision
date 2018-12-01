@@ -27,6 +27,7 @@ Mat getGradMag(Mat frame_gray);
 Mat getGradDir(Mat frame_gray);
 Mat prepImage(Mat frame);
 Mat generateLineHoughSpace(Mat gradMag, Mat gradDir);
+Mat drawLines(Mat originalImage, Mat houghSpace);
 /** Global variables */
 String cascade_name = "cascade.xml";
 CascadeClassifier cascade;
@@ -48,12 +49,44 @@ int main( int argc, const char** argv ) {
 	Mat gradDir = getGradDir(prepedImage);
 
   Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
+	Mat output = drawLines(frame, houghSpace);
 
 	// 4. Save Result Image
-	imwrite( "outputMag.jpg", gradMag );
-	imwrite( "outputDir.jpg", gradDir );
+	string filename = argv[1];
+	string outputname = filename.substr(10, filename.size() - 14);
+	imwrite( "Detected1/"+outputname+".jpg", output );
+
+	imwrite( "Lines/"+outputname+".jpg", gradMag );
 
 	return 0;
+}
+
+Mat drawLines(Mat originalImage, Mat houghSpace) {
+
+	double pi = 3.1415926535897;
+  int width = originalImage.size().width;
+	int height = originalImage.size().height;
+
+	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
+		for (int rho = 0; rho < houghSpace.size().height; rho++) {
+			if (houghSpace.at<int>(rho, degrees) > 170){
+
+				int crossx = (rho-width-height)/cos(degrees*pi/180);
+				int crossy = (rho-width-height)/sin(degrees*pi/180);
+				int crosswidth = ((rho-width-height)-width*cos(degrees*pi/180))/sin(degrees*pi/180);
+				int crossheight = ((rho-width-height)-height*sin(degrees*pi/180))/cos(degrees*pi/180);
+
+				//line(originalImage, Point(width, crosswidth), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
+				//line(originalImage, Point(0, crossy), Point(crossx, 0), Scalar( 0, 255, 0 ), 1);
+				line(originalImage, Point(0, crossy), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
+				// line(originalImage, Point(0, crossy), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
+				// line(originalImage, Point(crossx, 0), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
+				// line(originalImage, Point(crossx, 0), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
+
+			}
+		}
+	}
+	return originalImage;
 }
 
 Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
@@ -62,6 +95,7 @@ Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
 	int width = gradMag.size().width;
 	int height = gradMag.size().height;
 	Mat houghSpace(2*(height+width), 360, CV_32SC1, Scalar(0));
+	Mat output;
 	double pi = 3.1415926535897;
 
 	for (int x = 0; x < width; x++) {
@@ -78,18 +112,9 @@ Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
 
 		}
 	}
-
-	for (int x = 0; x < 2*(width + height); x++) {
-		for (int y = 0; y < 360; y++ ) {
-			if (houghSpace.at<int>(x, y) != 0){
-				cout << houghSpace.at<int>(x, y) << endl;
-
-			}
-		}
-	}
-
-	imwrite( "hough.jpg", houghSpace );
-  return houghSpace;
+  normalize(houghSpace, output, 0, 255, NORM_MINMAX, CV_32SC1);
+	imwrite( "hough.jpg", output );
+  return output;
 }
 
 Mat prepImage(Mat frame) {
@@ -164,7 +189,7 @@ Mat getGradMag(Mat frame_gray) {
 		addWeighted( abs_grad_x, 0.5, abs_grad_y, 0.5, 0, gradMag );
 
 		Mat dest;
-		threshold(gradMag, dest, 100, 255, 0);
+		threshold(gradMag, dest, 150, 255, 0);
 
 		return dest;
 }
