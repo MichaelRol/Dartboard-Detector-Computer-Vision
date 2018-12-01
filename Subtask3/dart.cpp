@@ -27,7 +27,9 @@ Mat getGradMag(Mat frame_gray);
 Mat getGradDir(Mat frame_gray);
 Mat prepImage(Mat frame);
 Mat generateLineHoughSpace(Mat gradMag, Mat gradDir);
+Mat generateCircleHoughSpace(Mat gradMag, Mat gradDir);
 Mat drawLines(Mat originalImage, Mat houghSpace);
+Mat drawCircles (Mat originalImage, Mat houghSpace);
 /** Global variables */
 String cascade_name = "cascade.xml";
 CascadeClassifier cascade;
@@ -116,6 +118,29 @@ Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
 	imwrite( "hough.jpg", output );
   return output;
 }
+
+// Mat generateCircleHoughSpace(Mat gradMag, Mat gradDir) {
+//
+//   int rmax = 200;
+// 	int rmin = 20;
+//
+// 	Mat houghSpace(2*(height+width), 360, CV_32SC1, Scalar(0));
+//
+//   for (int x = 0; x < gradMag.size().width; x++) {
+// 		for (int y = 0; y < gradMag.size().height; y++) {
+// 			for (int r = rmin; r < rmax; r++){
+// 				int x0 = round(x + r * sin(gradDir.at<float>(y, x)));
+// 				int y0 = round(y + r * cos(gradDir.at<float>(y, x)));
+// 				if (x0 > 0 && y0 > 0 && x0 < gradMag.size().width && y0 < gradMag.size().height){
+//
+// 				}
+// 			}
+//
+// 		}
+// 	}
+//
+// }
+
 
 Mat prepImage(Mat frame) {
 
