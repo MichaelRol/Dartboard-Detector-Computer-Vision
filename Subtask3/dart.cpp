@@ -26,7 +26,7 @@ void calcF1(std::vector<Rect> faces, string csv);
 Mat getGradMag(Mat frame_gray);
 Mat getGradDir(Mat frame_gray);
 Mat prepImage(Mat frame);
-Mat generateHoughSpace(Mat gradMag, Mat gradDir);
+Mat generateLineHoughSpace(Mat gradMag, Mat gradDir);
 /** Global variables */
 String cascade_name = "cascade.xml";
 CascadeClassifier cascade;
@@ -47,7 +47,7 @@ int main( int argc, const char** argv ) {
 	Mat gradMag = getGradMag(prepedImage);
 	Mat gradDir = getGradDir(prepedImage);
 
-  Mat houghSpace = generateHoughSpace(gradMag, gradDir);
+  Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
 
 	// 4. Save Result Image
 	imwrite( "outputMag.jpg", gradMag );
@@ -56,7 +56,7 @@ int main( int argc, const char** argv ) {
 	return 0;
 }
 
-Mat generateHoughSpace(Mat gradMag, Mat gradDir) {
+Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
 
 
 	int width = gradMag.size().width;
@@ -69,17 +69,22 @@ Mat generateHoughSpace(Mat gradMag, Mat gradDir) {
 
 			if (gradMag.at<uchar>(y, x) != 0) {
 
-				float theta = gradDir.at<float>(y, x) + pi;
-				int rho = round((x*cos(theta) + y*sin(theta)) + width + height);
-
-
-        int degrees = round(theta * (180/pi));
-
-				cout << rho << endl;
-			  houghSpace.at<int>(rho, degrees) += 20;
+				for (int deg = 0; deg < 360; deg ++) {
+					int rho = round(x*cos(deg*pi/180) + y*sin(deg*pi/180) + width + height);
+					houghSpace.at<int>(rho, deg)++;
+				}
 
 			}
 
+		}
+	}
+
+	for (int x = 0; x < 2*(width + height); x++) {
+		for (int y = 0; y < 360; y++ ) {
+			if (houghSpace.at<int>(x, y) != 0){
+				cout << houghSpace.at<int>(x, y) << endl;
+
+			}
 		}
 	}
 
