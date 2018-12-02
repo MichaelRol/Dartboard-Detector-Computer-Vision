@@ -66,9 +66,9 @@ int main( int argc, const char** argv ) {
 Mat detectBoards(Mat originalImage, Mat houghSpace) {
 
 	double pi = 3.1415926535897;
-  int width = originalImage.size().width;
+  	int width = originalImage.size().width;
 	int height = originalImage.size().height;
-  int count = 0;
+  	int count = 0;
 
 	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
 		for (int rho = 0; rho < houghSpace.size().height; rho++) {
@@ -115,7 +115,10 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 
 				int y = round((a0*r1 - r0*a1)/(a0*b1 - b0*a1));
 				//cout << r0 << " " << r1 << " " << a0 << endl;
-				cout << x << " " << y << endl;
+				if (x >= 0 && x < width && y >= 0 && y < height) {
+					cout << x << " " << y << endl;
+				}
+
 			}
 		}
 	}
