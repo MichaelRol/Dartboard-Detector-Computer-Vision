@@ -93,12 +93,16 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 	for (int line = 0; line < count; line++) {
 		for (int restoflines = 0; restoflines < count; restoflines++) {
 		  if (line != restoflines) {
+
+				int degrees0 = linearry[line*2+1];
+				int degrees1 = linearry[restoflines*2+1];
+
 				int r0 = linearray[line*2];
 				int r1 = linearray[restoflines*2];
-				int a0 = cos(degrees*pi/180);
-				int a1 = cos(degrees*pi/180);
-				int b0 = sin(degrees*pi/180);
-				int b1 = sin(degrees*pi/180);
+				int a0 = cos(degrees0*pi/180);
+				int a1 = cos(degrees1*pi/180);
+				int b0 = sin(degrees0*pi/180);
+				int b1 = sin(degrees1*pi/180);
 
 				int x = (r0*b1 - b0*r1)/(a0*b1 - b0*a1);
 				int y = (a0*r1 - r0*a1)/(a0*b1 - b0*a1);
