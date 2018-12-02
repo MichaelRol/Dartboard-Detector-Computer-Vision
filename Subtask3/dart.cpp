@@ -90,7 +90,7 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 			if (houghSpace.at<int>(rho, degrees) > 170){
 
 				cout << "Rho: " << rho << " Theta: " << degrees << " Line: " << counted+1 << endl;
-				linearray[counted*2] = rho;
+				linearray[counted*2] = rho - width - height;
 				linearray[counted*2+1] = degrees;
 				counted++;
 			}
