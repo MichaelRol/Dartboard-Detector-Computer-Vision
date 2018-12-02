@@ -56,7 +56,7 @@ int main( int argc, const char** argv ) {
 	// 4. Save Result Image
 	string filename = argv[1];
 	string outputname = filename.substr(10, filename.size() - 14);
-	imwrite( "Detected/"+outputname+".jpg", output );
+	imwrite( "Detected2/"+outputname+".jpg", output );
 
 	imwrite( "Lines/"+outputname+".jpg", gradMag );
 
