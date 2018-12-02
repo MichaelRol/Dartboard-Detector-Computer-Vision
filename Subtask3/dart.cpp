@@ -28,7 +28,7 @@ Mat getGradDir(Mat frame_gray);
 Mat prepImage(Mat frame);
 Mat generateLineHoughSpace(Mat gradMag, Mat gradDir);
 Mat generateCircleHoughSpace(Mat gradMag, Mat gradDir);
-Mat drawLines(Mat originalImage, Mat houghSpace);
+Mat detectBoards(Mat originalImage, Mat houghSpace);
 Mat drawCircles (Mat originalImage, Mat houghSpace);
 /** Global variables */
 String cascade_name = "cascade.xml";
@@ -51,7 +51,7 @@ int main( int argc, const char** argv ) {
 	Mat gradDir = getGradDir(prepedImage);
 
   Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
-	Mat output = drawLines(frame, houghSpace);
+	Mat output = detectBoards(frame, houghSpace);
 
 	// 4. Save Result Image
 	string filename = argv[1];
@@ -63,31 +63,66 @@ int main( int argc, const char** argv ) {
 	return 0;
 }
 
-Mat drawLines(Mat originalImage, Mat houghSpace) {
+Mat detectBoards(Mat originalImage, Mat houghSpace) {
 
 	double pi = 3.1415926535897;
   int width = originalImage.size().width;
 	int height = originalImage.size().height;
+  int count = 0;
+	int* linearray = new int[2*count];
 
 	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
 		for (int rho = 0; rho < houghSpace.size().height; rho++) {
 			if (houghSpace.at<int>(rho, degrees) > 170){
-
-				int crossx = (rho-width-height)/cos(degrees*pi/180);
-				int crossy = (rho-width-height)/sin(degrees*pi/180);
-				int crosswidth = ((rho-width-height)-width*cos(degrees*pi/180))/sin(degrees*pi/180);
-				int crossheight = ((rho-width-height)-height*sin(degrees*pi/180))/cos(degrees*pi/180);
-
-				//line(originalImage, Point(width, crosswidth), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
-				//line(originalImage, Point(0, crossy), Point(crossx, 0), Scalar( 0, 255, 0 ), 1);
-				line(originalImage, Point(0, crossy), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
-				// line(originalImage, Point(0, crossy), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
-				// line(originalImage, Point(crossx, 0), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
-				// line(originalImage, Point(crossx, 0), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
-
+				count++;
 			}
 		}
 	}
+
+	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
+		for (int rho = 0; rho < houghSpace.size().height; rho++) {
+			if (houghSpace.at<int>(rho, degrees) > 170){
+				for (int line = 0; line < count; line++) {
+					linearray[line*2] = rho;
+					linearray[line*2+1] = degrees;
+				}
+			}
+		}
+	}
+
+	for (int line = 0; line < count; line++) {
+		for (int restoflines = 0; restoflines < count; restoflinesline++) {
+		  if (line != restoflines) {
+				r0 = linearray[line*2];
+				r1 = linearray[restoflines*2];
+				a0 = cos(degrees*pi/180);
+				a1 = cos(degrees*pi/180);
+				b0 = sin(degrees*pi/180);
+				b1 = sin(degrees*pi/180);
+
+				x = (r0*b1 - b0*r1)/(a0*b1 - b0*a1);
+				y = (a0*r1 - r0*a1)/(a0*b1 - b0*a1);
+				cout << x << " " << y << endl;
+			}
+		}
+	}
+
+
+	int crossx = (rho-width-height)/cos(degrees*pi/180);
+	int crossy = (rho-width-height)/sin(degrees*pi/180);
+	int crosswidth = ((rho-width-height)-width*cos(degrees*pi/180))/sin(degrees*pi/180);
+	int crossheight = ((rho-width-height)-height*sin(degrees*pi/180))/cos(degrees*pi/180);
+
+	//line(originalImage, Point(width, crosswidth), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
+	//line(originalImage, Point(0, crossy), Point(crossx, 0), Scalar( 0, 255, 0 ), 1);
+	line(originalImage, Point(0, crossy), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
+	// line(originalImage, Point(0, crossy), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
+	// line(originalImage, Point(crossx, 0), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
+	// line(originalImage, Point(crossx, 0), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
+
+
+
+
 	return originalImage;
 }
 
