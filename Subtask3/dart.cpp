@@ -28,7 +28,7 @@ Mat getGradDir(Mat frame_gray);
 Mat prepImage(Mat frame);
 Mat generateLineHoughSpace(Mat gradMag, Mat gradDir);
 Mat generateCircleHoughSpace(Mat gradMag, Mat gradDir);
-int** detectBoards(Mat originalImage, Mat houghSpace);
+int* detectBoards(Mat originalImage, Mat houghSpace);
 Mat drawCircles (Mat originalImage, Mat houghSpace);
 /** Global variables */
 String cascade_name = "cascade.xml";
@@ -51,7 +51,7 @@ int main( int argc, const char** argv ) {
 	Mat gradDir = getGradDir(prepedImage);
 
     Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
-	int** boards = detectBoards(frame, houghSpace);
+	int* boards = detectBoards(frame, houghSpace);
 	// for (int x = 0; x < 20; x++) {
 	// 	for (int y = 0; y < 20; y++) {
 	// 		if (boards[x][y] > 10) {
@@ -70,16 +70,13 @@ int main( int argc, const char** argv ) {
 	return 0;
 }
 
-int** detectBoards(Mat originalImage, Mat houghSpace) {
+int* detectBoards(Mat originalImage, Mat houghSpace) {
 
 	double pi = 3.1415926535897;
   	int width = originalImage.size().width;
 	int height = originalImage.size().height;
   	int count = 0;
-	int** buckets = {0};
-	buckets = new int*[width*height];
-	cout << buckets[0] << endl;
-	cout << buckets[0][0] << endl;
+	int buckets[20*20];
 	int bucketsizex = floor(width/20);
 	int bucketsizey = floor(height/20);
 
@@ -129,7 +126,7 @@ int** detectBoards(Mat originalImage, Mat houghSpace) {
 				for(int bucketx = 0; bucketx < 20; bucketx++) {
 					for (int buckety = 0; buckety < 20; buckety++) {
 						if (x >= bucketx * bucketsizex && x < (bucketx+1)*bucketsizex && y >= buckety * bucketsizey && y < (buckety+1)*bucketsizey) {
-							cout << buckets[0][0] << endl;
+							buckets[bucketx*20+buckety]++;
 						}
 					}
 				}
