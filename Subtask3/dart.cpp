@@ -56,7 +56,7 @@ int main( int argc, const char** argv ) {
 	// 4. Save Result Image
 	string filename = argv[1];
 	string outputname = filename.substr(10, filename.size() - 14);
-	imwrite( "Detected1/"+outputname+".jpg", output );
+	imwrite( "Detected/"+outputname+".jpg", output );
 
 	imwrite( "Lines/"+outputname+".jpg", gradMag );
 
@@ -105,7 +105,7 @@ Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
 
 			if (gradMag.at<uchar>(y, x) != 0) {
 
-				for (int deg = 0; deg < 360; deg ++) {
+				for (int deg = 0; deg < 360; deg=deg+2) {
 					int rho = round(x*cos(deg*pi/180) + y*sin(deg*pi/180) + width + height);
 					houghSpace.at<int>(rho, deg)++;
 				}
