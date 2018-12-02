@@ -52,13 +52,13 @@ int main( int argc, const char** argv ) {
 
     Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
 	int** boards = detectBoards(frame, houghSpace);
-	for (int x = 0; x < 20; x++) {
-		for (int y = 0; y < 20; y++) {
-			if (boards[x][y] > 10) {
-				cout << "X: " << x << " Y: " << y << endl;
-			}
-		}
-	}
+	// for (int x = 0; x < 20; x++) {
+	// 	for (int y = 0; y < 20; y++) {
+	// 		if (boards[x][y] > 10) {
+	// 			cout << "X: " << x << " Y: " << y << endl;
+	// 		}
+	// 	}
+	// }
 
 	// 4. Save Result Image
 	string filename = argv[1];
@@ -126,9 +126,9 @@ int** detectBoards(Mat originalImage, Mat houghSpace) {
 
 				for(int bucketx = 0; bucketx < 20; bucketx++) {
 					for (int buckety = 0; buckety < 20; buckety++) {
-						// if (x >= bucketx * bucketsizex && x < (bucketx+1)*bucketsizex && y >= buckety * bucketsizey && y < (buckety+1)*bucketsizey) {
-						// 	buckets[bucketx][buckety]++;
-						// }
+						if (x >= bucketx * bucketsizex && x < (bucketx+1)*bucketsizex && y >= buckety * bucketsizey && y < (buckety+1)*bucketsizey) {
+							buckets[bucketx][buckety]++;
+						}
 					}
 				}
 
