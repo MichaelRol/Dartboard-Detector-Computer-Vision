@@ -56,7 +56,7 @@ int main( int argc, const char** argv ) {
 	// 4. Save Result Image
 	string filename = argv[1];
 	string outputname = filename.substr(10, filename.size() - 14);
-	imwrite( "Detected2/"+outputname+".jpg", output );
+	imwrite( "Detected/"+outputname+".jpg", output );
 
 	imwrite( "Lines/"+outputname+".jpg", gradMag );
 
@@ -75,6 +75,11 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 		for (int rho = 0; rho < houghSpace.size().height; rho++) {
 			if (houghSpace.at<int>(rho, degrees) > 170){
 				count++;
+				int crossx = (rho-width-height)/cos(degrees*pi/180);
+				int crossy = (rho-width-height)/sin(degrees*pi/180);
+				int crosswidth = ((rho-width-height)-width*cos(degrees*pi/180))/sin(degrees*pi/180);
+				int crossheight = ((rho-width-height)-height*sin(degrees*pi/180))/cos(degrees*pi/180);
+				line(originalImage, Point(0, crossy), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
 			}
 		}
 	}
@@ -103,9 +108,11 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 	// 			float a1 = cos(degrees1*pi/180);
 	// 			float b0 = sin(degrees0*pi/180);
 	// 			float a0 = cos(degrees0*pi/180);
+
 	// 			float b1 = sin(degrees1*pi/180);
 	//
 	// 			int x = round((r0*b1 - b0*r1)/(a0*b1 - b0*a1));
+
 	// 			int y = round((a0*r1 - r0*a1)/(a0*b1 - b0*a1));
 	// 			cout << x << " " << y << endl;
 	// 		}
@@ -113,14 +120,9 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 	// }
 
 
-	// int crossx = (rho-width-height)/cos(degrees*pi/180);
-	// int crossy = (rho-width-height)/sin(degrees*pi/180);
-	// int crosswidth = ((rho-width-height)-width*cos(degrees*pi/180))/sin(degrees*pi/180);
-	// int crossheight = ((rho-width-height)-height*sin(degrees*pi/180))/cos(degrees*pi/180);
 
 	//line(originalImage, Point(width, crosswidth), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
 	//line(originalImage, Point(0, crossy), Point(crossx, 0), Scalar( 0, 255, 0 ), 1);
-	//--line(originalImage, Point(0, crossy), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
 	// line(originalImage, Point(0, crossy), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
 	// line(originalImage, Point(crossx, 0), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
 	// line(originalImage, Point(crossx, 0), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
