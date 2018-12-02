@@ -131,7 +131,7 @@ int** detectBoards(Mat originalImage, Mat houghSpace) {
 						}
 					}
 				}
-				cout << bucket[0][0] << endl;
+				cout << buckets[0][0] << endl;
 
 			}
 		}
