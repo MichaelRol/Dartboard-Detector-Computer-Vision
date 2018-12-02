@@ -85,16 +85,16 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 	}
 	cout << count << endl;
 
-	// for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
-	// 	for (int rho = 0; rho < houghSpace.size().height; rho++) {
-	// 		if (houghSpace.at<int>(rho, degrees) > 170){
-	// 			for (int line = 0; line < count; line++) {
-	// 				linearray[line*2] = rho;
-	// 				linearray[line*2+1] = degrees;
-	// 			}
-	// 		}
-	// 	}
-	// }
+	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
+		for (int rho = 0; rho < houghSpace.size().height; rho++) {
+			if (houghSpace.at<int>(rho, degrees) > 170){
+				for (int line = 0; line < count; line++) {
+					linearray[line*2] = rho;
+					linearray[line*2+1] = degrees;
+				}
+			}
+		}
+	}
 
 	// for (int line = 0; line < count; line++) {
 	// 	for (int restoflines = 0; restoflines < count; restoflines++) {
