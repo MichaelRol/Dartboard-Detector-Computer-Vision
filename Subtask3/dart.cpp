@@ -69,7 +69,6 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
   int width = originalImage.size().width;
 	int height = originalImage.size().height;
   int count = 0;
-	int* linearray = new int[2*count];
 
 	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
 		for (int rho = 0; rho < houghSpace.size().height; rho++) {
@@ -84,7 +83,7 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 		}
 	}
 	cout << count << endl;
-
+	int linearray[count*2];
 	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
 		for (int rho = 0; rho < houghSpace.size().height; rho++) {
 			if (houghSpace.at<int>(rho, degrees) > 170){
