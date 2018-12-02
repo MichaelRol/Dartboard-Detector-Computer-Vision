@@ -96,7 +96,7 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 			}
 		}
 	}
-  cout << linearray[0] << " " << linearray[1] << " "<< linearray[30] << " " << linearray[31] << endl;
+
 	for (int line = 0; line < count; line++) {
 		for (int restoflines = 0; restoflines < count; restoflines++) {
 		  if (line != restoflines) {
@@ -114,8 +114,8 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 				int x = round((r0*b1 - b0*r1)/(a0*b1 - b0*a1));
 
 				int y = round((a0*r1 - r0*a1)/(a0*b1 - b0*a1));
-				cout << r0 << " " << r1 << " " << a0 << endl;
-				// cout << x << " " << y << endl;
+				//cout << r0 << " " << r1 << " " << a0 << endl;
+				cout << x << " " << y << endl;
 			}
 		}
 	}
