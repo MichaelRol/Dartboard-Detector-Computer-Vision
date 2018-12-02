@@ -78,6 +78,8 @@ int** detectBoards(Mat originalImage, Mat houghSpace) {
   	int count = 0;
 	int** buckets = {0};
 	buckets = new int*[width*height];
+	cout << buckets[0] << endl;
+	cout << buckets[0][0] << endl;
 	int bucketsizex = floor(width/20);
 	int bucketsizey = floor(height/20);
 
