@@ -95,28 +95,28 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 		}
 	}
 
-	// for (int line = 0; line < count; line++) {
-	// 	for (int restoflines = 0; restoflines < count; restoflines++) {
-	// 	  if (line != restoflines) {
-	//
-	// 			int degrees0 = linearray[line*2+1];
-	// 			int degrees1 = linearray[restoflines*2+1];
-	//
-	// 			int r0 = linearray[line*2];
-	// 			int r1 = linearray[restoflines*2];
-	// 			float a1 = cos(degrees1*pi/180);
-	// 			float b0 = sin(degrees0*pi/180);
-	// 			float a0 = cos(degrees0*pi/180);
+	for (int line = 0; line < count; line++) {
+		for (int restoflines = 0; restoflines < count; restoflines++) {
+		  if (line != restoflines) {
 
-	// 			float b1 = sin(degrees1*pi/180);
-	//
-	// 			int x = round((r0*b1 - b0*r1)/(a0*b1 - b0*a1));
+				int degrees0 = linearray[line*2+1];
+				int degrees1 = linearray[restoflines*2+1];
 
-	// 			int y = round((a0*r1 - r0*a1)/(a0*b1 - b0*a1));
-	// 			cout << x << " " << y << endl;
-	// 		}
-	// 	}
-	// }
+				int r0 = linearray[line*2];
+				int r1 = linearray[restoflines*2];
+				float a1 = cos(degrees1*pi/180);
+				float b0 = sin(degrees0*pi/180);
+				float a0 = cos(degrees0*pi/180);
+
+				float b1 = sin(degrees1*pi/180);
+
+				int x = round((r0*b1 - b0*r1)/(a0*b1 - b0*a1));
+
+				int y = round((a0*r1 - r0*a1)/(a0*b1 - b0*a1));
+				cout << x << " " << y << endl;
+			}
+		}
+	}
 
 
 
