@@ -51,7 +51,7 @@ int main( int argc, const char** argv ) {
 	Mat gradDir = getGradDir(prepedImage);
 
     Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
-	int buckets[20*20];
+	int buckets[21*21];
 	int* boards = detectBoards(frame, houghSpace, buckets);
 	
 	for (int x = 0; x < 20; x++) {
