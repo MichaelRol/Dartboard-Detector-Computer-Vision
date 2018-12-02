@@ -124,13 +124,13 @@ int** detectBoards(Mat originalImage, Mat houghSpace) {
 
 				int y = round((a0*r1 - r0*a1)/(a0*b1 - b0*a1));
 
-				for(int bucketx = 0; bucketx < 20; bucketx++) {
-					for (int buckety = 0; buckety < 20; buckety++) {
-						if (x >= bucketx * bucketsizex && x < (bucketx+1)*bucketsizex && y >= buckety * bucketsizey && y < (buckety+1)*bucketsizey) {
-							buckets[bucketx][buckety]++;
-						}
-					}
-				}
+				// for(int bucketx = 0; bucketx < 20; bucketx++) {
+				// 	for (int buckety = 0; buckety < 20; buckety++) {
+				// 		if (x >= bucketx * bucketsizex && x < (bucketx+1)*bucketsizex && y >= buckety * bucketsizey && y < (buckety+1)*bucketsizey) {
+				// 			buckets[bucketx][buckety]++;
+				// 		}
+				// 	}
+				// }
 
 			}
 		}
