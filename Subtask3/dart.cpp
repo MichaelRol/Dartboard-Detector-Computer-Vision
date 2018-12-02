@@ -54,13 +54,13 @@ int main( int argc, const char** argv ) {
 	int buckets[20*20];
 	int* boards = detectBoards(frame, houghSpace, buckets);
 	
-	// for (int x = 0; x < 20; x++) {
-	// 	for (int y = 0; y < 20; y++) {
-	// 		if (boards[x][y] > 10) {
-	// 			cout << "X: " << x << " Y: " << y << endl;
-	// 		}
-	// 	}
-	// }
+	for (int x = 0; x < 20; x++) {
+		for (int y = 0; y < 20; y++) {
+			if (boards[x][y] > 10) {
+				cout << "X: " << x << " Y: " << y << endl;
+			}
+		}
+	}
 
 	// 4. Save Result Image
 	string filename = argv[1];
