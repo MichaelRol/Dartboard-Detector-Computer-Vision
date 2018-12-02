@@ -90,11 +90,12 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 				for (int line = 0; line < count; line++) {
 					linearray[line*2] = rho;
 					linearray[line*2+1] = degrees;
+
 				}
 			}
 		}
 	}
-
+  cout << linearray[0] << " " << linearray[1] << " "<< linearray[30] << " " << linearray[31] << endl;
 	for (int line = 0; line < count; line++) {
 		for (int restoflines = 0; restoflines < count; restoflines++) {
 		  if (line != restoflines) {
