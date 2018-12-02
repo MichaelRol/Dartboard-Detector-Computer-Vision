@@ -105,7 +105,7 @@ Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
 
 			if (gradMag.at<uchar>(y, x) != 0) {
 
-				for (int deg = 0; deg < 360; deg=deg+2) {
+				for (int deg = 0; deg < 360; deg++) {
 					int rho = round(x*cos(deg*pi/180) + y*sin(deg*pi/180) + width + height);
 					houghSpace.at<int>(rho, deg)++;
 				}
