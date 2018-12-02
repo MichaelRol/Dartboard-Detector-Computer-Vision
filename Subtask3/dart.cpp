@@ -28,7 +28,7 @@ Mat getGradDir(Mat frame_gray);
 Mat prepImage(Mat frame);
 Mat generateLineHoughSpace(Mat gradMag, Mat gradDir);
 Mat generateCircleHoughSpace(Mat gradMag, Mat gradDir);
-Mat detectBoards(Mat originalImage, Mat houghSpace);
+int** detectBoards(Mat originalImage, Mat houghSpace);
 Mat drawCircles (Mat originalImage, Mat houghSpace);
 /** Global variables */
 String cascade_name = "cascade.xml";
@@ -46,29 +46,40 @@ int main( int argc, const char** argv ) {
 	// 3. Detect Faces and Display Result
 	//detectAndDisplay( frame , argv[1]);
 
-  Mat prepedImage = prepImage(frame);
+    Mat prepedImage = prepImage(frame);
 	Mat gradMag = getGradMag(prepedImage);
 	Mat gradDir = getGradDir(prepedImage);
 
-  Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
-	Mat output = detectBoards(frame, houghSpace);
+    Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
+	int** boards = detectBoards(frame, houghSpace);
+	for (int x = 0; x < 20; x++) {
+		for (int y = 0; y < 20; y++) {
+			if (boards[x][y] > 10) {
+				cout << "X: " << x << " Y: " << y << endl;
+			}
+		}
+	}
 
 	// 4. Save Result Image
 	string filename = argv[1];
 	string outputname = filename.substr(10, filename.size() - 14);
-	imwrite( "Detected/"+outputname+".jpg", output );
+	//imwrite( "Detected/"+outputname+".jpg", output );
 
 	imwrite( "Lines/"+outputname+".jpg", gradMag );
 
 	return 0;
 }
 
-Mat detectBoards(Mat originalImage, Mat houghSpace) {
+int** detectBoards(Mat originalImage, Mat houghSpace) {
 
 	double pi = 3.1415926535897;
   	int width = originalImage.size().width;
 	int height = originalImage.size().height;
   	int count = 0;
+	int** buckets = 0;
+	buckets = new int*[width*height];
+	int bucketsizex = floor(width/20);
+	int bucketsizey = floor(height/20);
 
 	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
 		for (int rho = 0; rho < houghSpace.size().height; rho++) {
@@ -88,8 +99,6 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
 		for (int rho = 0; rho < houghSpace.size().height; rho++) {
 			if (houghSpace.at<int>(rho, degrees) > 170){
-
-				cout << "Rho: " << rho << " Theta: " << degrees << " Line: " << counted+1 << endl;
 				linearray[counted*2] = rho - width - height;
 				linearray[counted*2+1] = degrees;
 				counted++;
@@ -114,7 +123,14 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 				int x = round((r0*b1 - b0*r1)/(a0*b1 - b0*a1));
 
 				int y = round((a0*r1 - r0*a1)/(a0*b1 - b0*a1));
-				//cout << r0 << " " << r1 << " " << a0 << endl;
+
+				for(int bucketx = 0; bucketx < 20; bucketx++) {
+					for (int buckety = 0; buckety < 20; buckety++) {
+						if (x >= bucketx * bucketsizex && x < (bucketx+1)*bucketsizex && y >= buckety * bucketsizey && y < (buckety+1)*bucketsizey) {
+							buckets[bucketx][buckety]++;
+						}
+					}
+				}
 				if (x >= 0 && x < width && y >= 0 && y < height) {
 					cout << x << " " << y << endl;
 				}
@@ -134,7 +150,7 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 
 
 
-	return originalImage;
+	return buckets;
 }
 
 Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
