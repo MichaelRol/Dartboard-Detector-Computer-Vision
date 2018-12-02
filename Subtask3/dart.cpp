@@ -57,7 +57,8 @@ int main( int argc, const char** argv ) {
 	for (int x = 0; x < 20; x++) {
 		for (int y = 0; y < 20; y++) {
 			if (boards[x*20+y] > 20) {
-				cout << "X: " << x << " Y: " << y << endl;
+				// cout << "X: " << x << " Y: " << y << endl;
+				cout << boards[x*20+y];
 			}
 		}
 	}
