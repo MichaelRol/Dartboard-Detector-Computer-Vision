@@ -76,7 +76,7 @@ int** detectBoards(Mat originalImage, Mat houghSpace) {
   	int width = originalImage.size().width;
 	int height = originalImage.size().height;
   	int count = 0;
-	int** buckets = 0;
+	int** buckets = {0};
 	buckets = new int*[width*height];
 	int bucketsizex = floor(width/20);
 	int bucketsizey = floor(height/20);
@@ -127,7 +127,7 @@ int** detectBoards(Mat originalImage, Mat houghSpace) {
 				for(int bucketx = 0; bucketx < 20; bucketx++) {
 					for (int buckety = 0; buckety < 20; buckety++) {
 						if (x >= bucketx * bucketsizex && x < (bucketx+1)*bucketsizex && y >= buckety * bucketsizey && y < (buckety+1)*bucketsizey) {
-							//buckets[0][0]++;
+							buckets[0][0]++;
 						}
 					}
 				}
