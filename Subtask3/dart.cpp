@@ -104,15 +104,15 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 
 				int r0 = linearray[line*2];
 				int r1 = linearray[restoflines*2];
-				float a1 = cos(degrees1*pi/180);
-				float b0 = sin(degrees0*pi/180);
-				float a0 = cos(degrees0*pi/180);
-
-				float b1 = sin(degrees1*pi/180);
+				float a1 = cos((float)degrees1*pi/180);
+				float b0 = sin((float)degrees0*pi/180);
+				float a0 = cos((float)degrees0*pi/180);
+				float b1 = sin((float)degrees1*pi/180);
 
 				int x = round((r0*b1 - b0*r1)/(a0*b1 - b0*a1));
 
 				int y = round((a0*r1 - r0*a1)/(a0*b1 - b0*a1));
+				cout << r0 << " " << r1 << " " << ao << endl;
 				cout << x << " " << y << endl;
 			}
 		}
