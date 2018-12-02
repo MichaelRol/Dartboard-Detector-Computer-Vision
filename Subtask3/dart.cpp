@@ -78,38 +78,39 @@ Mat detectBoards(Mat originalImage, Mat houghSpace) {
 			}
 		}
 	}
+	cout << count << endl;
 
-	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
-		for (int rho = 0; rho < houghSpace.size().height; rho++) {
-			if (houghSpace.at<int>(rho, degrees) > 170){
-				for (int line = 0; line < count; line++) {
-					linearray[line*2] = rho;
-					linearray[line*2+1] = degrees;
-				}
-			}
-		}
-	}
+	// for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
+	// 	for (int rho = 0; rho < houghSpace.size().height; rho++) {
+	// 		if (houghSpace.at<int>(rho, degrees) > 170){
+	// 			for (int line = 0; line < count; line++) {
+	// 				linearray[line*2] = rho;
+	// 				linearray[line*2+1] = degrees;
+	// 			}
+	// 		}
+	// 	}
+	// }
 
-	for (int line = 0; line < count; line++) {
-		for (int restoflines = 0; restoflines < count; restoflines++) {
-		  if (line != restoflines) {
-
-				int degrees0 = linearray[line*2+1];
-				int degrees1 = linearray[restoflines*2+1];
-
-				int r0 = linearray[line*2];
-				int r1 = linearray[restoflines*2];
-				float a1 = cos(degrees1*pi/180);
-				float b0 = sin(degrees0*pi/180);
-				float a0 = cos(degrees0*pi/180);
-				float b1 = sin(degrees1*pi/180);
-
-				int x = round((r0*b1 - b0*r1)/(a0*b1 - b0*a1));
-				int y = round((a0*r1 - r0*a1)/(a0*b1 - b0*a1));
-				cout << x << " " << y << endl;
-			}
-		}
-	}
+	// for (int line = 0; line < count; line++) {
+	// 	for (int restoflines = 0; restoflines < count; restoflines++) {
+	// 	  if (line != restoflines) {
+	//
+	// 			int degrees0 = linearray[line*2+1];
+	// 			int degrees1 = linearray[restoflines*2+1];
+	//
+	// 			int r0 = linearray[line*2];
+	// 			int r1 = linearray[restoflines*2];
+	// 			float a1 = cos(degrees1*pi/180);
+	// 			float b0 = sin(degrees0*pi/180);
+	// 			float a0 = cos(degrees0*pi/180);
+	// 			float b1 = sin(degrees1*pi/180);
+	//
+	// 			int x = round((r0*b1 - b0*r1)/(a0*b1 - b0*a1));
+	// 			int y = round((a0*r1 - r0*a1)/(a0*b1 - b0*a1));
+	// 			cout << x << " " << y << endl;
+	// 		}
+	// 	}
+	// }
 
 
 	// int crossx = (rho-width-height)/cos(degrees*pi/180);
