@@ -28,7 +28,7 @@ Mat getGradDir(Mat frame_gray);
 Mat prepImage(Mat frame);
 Mat generateLineHoughSpace(Mat gradMag, Mat gradDir);
 Mat generateCircleHoughSpace(Mat gradMag, Mat gradDir);
-Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets);
+Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets, string filename);
 Mat drawCircles (Mat originalImage, Mat houghSpace);
 /** Global variables */
 String cascade_name = "cascade.xml";
@@ -42,6 +42,7 @@ int main( int argc, const char** argv ) {
 
 	// 2. Load the Strong Classifier in a structure called `Cascade'
 	if( !cascade.load( cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
+	string filename = argv[1];
 
 	// 3. Detect Faces and Display Result
 	//detectAndDisplay( frame , argv[1]);
@@ -52,19 +53,18 @@ int main( int argc, const char** argv ) {
 
   Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
 	int buckets[20*20] = {0};
-	Mat detected = detectBoards(frame, houghSpace, buckets);
+	Mat detected = detectBoards(frame, houghSpace, buckets, filename);
 
 	// 4. Save Result Image
-	string filename = argv[1];
 	string outputname = filename.substr(10, filename.size() - 14);
 	//imwrite( "Detected/"+outputname+".jpg", output );
 
-	imwrite( "Detected1/"+outputname+".jpg", detected );
+	imwrite( "Detected/"+outputname+".jpg", detected );
 
 	return 0;
 }
 
-Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
+Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets, string filename) {
 
 	double pi = 3.1415926535897;
   int width = originalImage.size().width;
@@ -132,35 +132,45 @@ Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
 		}
 	}
 
-		std::vector<Rect> boards;
-		Mat frame_gray;
+	std::vector<Rect> boards;
+	std::vector<Rect> goodBoards;
+	int numofboards = 0;
+	Mat frame_gray;
 
-		// 1. Prepare Image by turning it into Grayscale and normalising lighting
-		cvtColor( originalImage, frame_gray, CV_BGR2GRAY );
-		equalizeHist( frame_gray, frame_gray );
+	// 1. Prepare Image by turning it into Grayscale and normalising lighting
+	cvtColor( originalImage, frame_gray, CV_BGR2GRAY );
+	equalizeHist( frame_gray, frame_gray );
 
-		// 2. Perform Viola-Jones Object Detection
-		cascade.detectMultiScale( frame_gray, boards, 1.1, 1, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50), Size(500,500) );
+	// 2. Perform Viola-Jones Object Detection
+	cascade.detectMultiScale( frame_gray, boards, 1.1, 1, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50), Size(500,500) );
 
-		for(int x = 0; x < 20; x++){
-			for(int y = 0; y < 20; y++){
-				for( int i = 0; i < boards.size(); i++ ) {
-					int topleftx = boards[i].x;
-					int toplefty = boards[i].y;
-					int bottomrightx = boards[i].x + boards[i].width;
-					int bottomrighty = boards[i].y + boards[i].height;
-					int midx = (topleftx + bottomrightx)/2;
-					int midy = (toplefty + bottomrighty)/2;
+	for(int x = 0; x < 20; x++){
+		for(int y = 0; y < 20; y++){
+			for( int i = 0; i < boards.size(); i++ ) {
+				int topleftx = boards[i].x;
+				int toplefty = boards[i].y;
+				int bottomrightx = boards[i].x + boards[i].width;
+				int bottomrighty = boards[i].y + boards[i].height;
+				int midx = (topleftx + bottomrightx)/2;
+				int midy = (toplefty + bottomrighty)/2;
 
-					if(bucketavgx[x*20+y] > midx-20 && bucketavgx[x*20+y] < midx+20 \
-					&& bucketavgy[x*20+y] > midy-20 && bucketavgy[x*20+y] < midy+20) {
-						rectangle(originalImage, Point(boards[i].x, boards[i].y), Point(boards[i].x + boards[i].width, boards[i].y + boards[i].height), Scalar( 0, 255, 0 ), 2);
+ 				bool add = true;
+				if(bucketavgx[x*20+y] > midx-20 && bucketavgx[x*20+y] < midx+20 \
+				&& bucketavgy[x*20+y] > midy-20 && bucketavgy[x*20+y] < midy+20) {
+					for (int it = 0; it < numofboards; it++) {
+						if (boards[i].x == goodBoards[it].x && boards[i].y == goodBoards[it].y && boards[i].width == goodBoards[it].width && boards[i].height == goodBoards[it].height) {
+							add = false;
+						}
 					}
+					if (add) goodBoards.push_back(boards[i]);
+					numofboards++;
+					rectangle(originalImage, Point(boards[i].x, boards[i].y), Point(boards[i].x + boards[i].width, boards[i].y + boards[i].height), Scalar( 0, 255, 0 ), 2);
 				}
 			}
 		}
+	}
 
-		//calcF1(boards, filename);
+	calcF1(goodBoards, filename);
 	return originalImage;
 }
 
@@ -188,10 +198,9 @@ void detectAndDisplay( Mat frame , string filename) {
 
 Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
 
-
 	int width = gradMag.size().width;
 	int height = gradMag.size().height;
-	Mat houghSpace(2*(height+width), 360, CV_32SC1, Scalar(0));
+	Mat houghSpace(2*(height+width), 180, CV_32SC1, Scalar(0));
 	Mat output;
 	double pi = 3.1415926535897;
 
@@ -200,7 +209,7 @@ Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
 
 			if (gradMag.at<uchar>(y, x) != 0) {
 
-				for (int deg = 0; deg < 360; deg++) {
+				for (int deg = 0; deg < 360; deg = deg + 2) {
 					int rho = round(x*cos(deg*pi/180) + y*sin(deg*pi/180) + width + height);
 					houghSpace.at<int>(rho, deg)++;
 				}
@@ -235,15 +244,8 @@ Mat getGradDir(Mat frame_gray) {
 	Mat grad_x, grad_y;
 	Mat abs_grad_x, abs_grad_y;
 
-	/// Gradient X
-	//Scharr( src_gray, grad_x, ddepth, 1, 0, scale, delta, BORDER_DEFAULT );
 	Sobel( frame_gray, grad_x, ddepth, 1, 0, 3, scale, delta, BORDER_DEFAULT );
-	//convertScaleAbs( grad_x, abs_grad_x );
-
-	/// Gradient Y
-	//Scharr( src_gray, grad_y, ddepth, 0, 1, scale, delta, BORDER_DEFAULT );
 	Sobel( frame_gray, grad_y, ddepth, 0, 1, 3, scale, delta, BORDER_DEFAULT );
-	//convertScaleAbs( grad_y, abs_grad_y );
 
 	Mat gradDir(frame_gray.size().height, frame_gray.size().width, CV_32F);
 
@@ -268,42 +270,36 @@ Mat getGradMag(Mat frame_gray) {
 
 		int c;
 
-		/// Generate grad_x and grad_y
 		Mat grad_x, grad_y;
 		Mat abs_grad_x, abs_grad_y;
 
-		/// Gradient X
-		//Scharr( src_gray, grad_x, ddepth, 1, 0, scale, delta, BORDER_DEFAULT );
 		Sobel( frame_gray, grad_x, ddepth, 1, 0, 3, scale, delta, BORDER_DEFAULT );
 		convertScaleAbs( grad_x, abs_grad_x );
 
-		/// Gradient Y
-		//Scharr( src_gray, grad_y, ddepth, 0, 1, scale, delta, BORDER_DEFAULT );
 		Sobel( frame_gray, grad_y, ddepth, 0, 1, 3, scale, delta, BORDER_DEFAULT );
 		convertScaleAbs( grad_y, abs_grad_y );
 
-		/// Total Gradient (approximate)
 		Mat gradMag;
 		addWeighted( abs_grad_x, 0.5, abs_grad_y, 0.5, 0, gradMag );
 
 		Mat dest;
-		threshold(gradMag, dest, 150, 255, 0);
+		threshold(gradMag, dest, 170, 255, 0);
 
 		return dest;
 }
 
 /** @function detectAndDisplay */
 
-bool checkMatch(string topleftx, string toplefty, string bottomrightx, string bottomrighty, Rect		 face) {
-  if (abs(stoi(topleftx) - face.x) < 100 && abs(stoi(toplefty) - face.y) < 100 \
-      && abs(stoi(bottomrightx) - (face.x + face.width)) < 100 && abs(stoi(bottomrighty) - (face.y + face.height)) < 100) {
+bool checkMatch(string topleftx, string toplefty, string bottomrightx, string bottomrighty, Rect board) {
+  if (abs(stoi(topleftx) - board.x) < 100 && abs(stoi(toplefty) - board.y) < 100 \
+      && abs(stoi(bottomrightx) - (board.x + board.width)) < 100 && abs(stoi(bottomrighty) - (board.y + board.height)) < 100) {
 		return true;
 	} else {
 	 	return false;
 	}
 }
 
-void calcF1(std::vector<Rect> faces, string csv) {
+void calcF1(std::vector<Rect> boards, string csv) {
 
 	string subname = csv.substr(14, csv.size() - 18);
 	string csvname = "CSVs/boardcoords" + subname + ".csv";
@@ -317,9 +313,9 @@ void calcF1(std::vector<Rect> faces, string csv) {
 	string bottomrightx;
 	string bottomrighty;
 
-	double numfaces = 0;
+	double numboards = 0;
 	double truepositives = 0;
-  	double falsenegatives = 0;
+  double falsenegatives = 0;
 	double falsepositives = 0;
 
 	while(ip.good()) {
@@ -329,23 +325,23 @@ void calcF1(std::vector<Rect> faces, string csv) {
 		getline(ip, bottomrighty, '\n');
 
 		if (ip.eof()) break;
-		numfaces++;
+		numboards++;
 
-		for (int i = 0; i < faces.size(); i++) {
-			if (checkMatch(topleftx, toplefty, bottomrightx, bottomrighty, faces[i])) {
+		for (int i = 0; i < boards.size(); i++) {
+			if (checkMatch(topleftx, toplefty, bottomrightx, bottomrighty, boards[i])) {
 				truepositives++;
 				break;
 			}
 		}
 	}
-  falsepositives = faces.size() - truepositives;
-	falsenegatives = numfaces - truepositives;
+  falsepositives = boards.size() - truepositives;
+	falsenegatives = numboards - truepositives;
 
 	double f1score = 2*truepositives/(2*truepositives + falsenegatives + falsepositives);
 
-	cout << "True number of faces: " << numfaces << endl << "True Positives: " \
-	          << truepositives << endl << "TPR: " << truepositives/numfaces << endl \
-						<< "F1 Score: " << f1score << endl;
+	cout << "True number of boards: " << numboards << endl << "True Positives: " \
+	          << truepositives << endl << "TPR: " << truepositives/numboards << endl \
+						<< "F1 Score: " << f1score << endl << boards.size() << endl;
 
 	ip.close();
 
