@@ -1,0 +1,16 @@
+./a.out Originals/dart0.jpg
+./a.out Originals/dart1.jpg
+./a.out Originals/dart2.jpg
+./a.out Originals/dart3.jpg
+./a.out Originals/dart4.jpg
+./a.out Originals/dart5.jpg
+./a.out Originals/dart6.jpg
+./a.out Originals/dart7.jpg
+./a.out Originals/dart8.jpg
+./a.out Originals/dart9.jpg
+./a.out Originals/dart10.jpg
+./a.out Originals/dart11.jpg
+./a.out Originals/dart12.jpg
+./a.out Originals/dart13.jpg
+./a.out Originals/dart14.jpg
+./a.out Originals/dart15.jpg

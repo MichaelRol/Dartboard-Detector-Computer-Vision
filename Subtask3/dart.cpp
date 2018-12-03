@@ -46,11 +46,11 @@ int main( int argc, const char** argv ) {
 	// 3. Detect Faces and Display Result
 	//detectAndDisplay( frame , argv[1]);
 
-    Mat prepedImage = prepImage(frame);
+  Mat prepedImage = prepImage(frame);
 	Mat gradMag = getGradMag(prepedImage);
 	Mat gradDir = getGradDir(prepedImage);
 
-    Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
+  Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
 	int buckets[20*20] = {0};
 	Mat detected = detectBoards(frame, houghSpace, buckets);
 
@@ -59,7 +59,7 @@ int main( int argc, const char** argv ) {
 	string outputname = filename.substr(10, filename.size() - 14);
 	//imwrite( "Detected/"+outputname+".jpg", output );
 
-	imwrite( "Detected/"+outputname+".jpg", detected );
+	imwrite( "Detected1/"+outputname+".jpg", detected );
 
 	return 0;
 }
@@ -87,7 +87,7 @@ Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
 			}
 		}
 	}
-	
+
 	int linearray[count*2];
 	int counted = 0;
 	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
@@ -132,14 +132,6 @@ Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
 		}
 	}
 
-		// for (int x = 0; x < 20; x++) {
-		// 	for (int y = 0; y < 20; y++) {
-		// 		if (buckets[x*20+y] > 20) {
-		// 			cout << "X: " << bucketavgx[x*20+y] << " Y: " << bucketavgy[x*20+y] << endl;
-		// 		}
-		// 	}
-		// }
-
 		std::vector<Rect> boards;
 		Mat frame_gray;
 
@@ -149,10 +141,6 @@ Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
 
 		// 2. Perform Viola-Jones Object Detection
 		cascade.detectMultiScale( frame_gray, boards, 1.1, 1, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50), Size(500,500) );
-		// for( int i = 0; i < boards.size(); i++ ) {
-	 	// 	rectangle(originalImage, Point(boards[i].x, boards[i].y), Point(boards[i].x + boards[i].width, boards[i].y + boards[i].height), Scalar( 0, 255, 0 ), 2);
-    // }
-		// 4. Draw box around faces found
 
 		for(int x = 0; x < 20; x++){
 			for(int y = 0; y < 20; y++){
@@ -161,24 +149,18 @@ Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
 					int toplefty = boards[i].y;
 					int bottomrightx = boards[i].x + boards[i].width;
 					int bottomrighty = boards[i].y + boards[i].height;
+					int midx = (topleftx + bottomrightx)/2;
+					int midy = (toplefty + bottomrighty)/2;
 
-					if(bucketavgx[x*20+y] > topleftx && bucketavgx[x*20+y] < topleftx + bottomrightx \
-					&& bucketavgy[x*20+y] > toplefty && bucketavgy[x*20+y] < toplefty + bottomrighty) {
+					if(bucketavgx[x*20+y] > midx-20 && bucketavgx[x*20+y] < midx+20 \
+					&& bucketavgy[x*20+y] > midy-20 && bucketavgy[x*20+y] < midy+20) {
 						rectangle(originalImage, Point(boards[i].x, boards[i].y), Point(boards[i].x + boards[i].width, boards[i].y + boards[i].height), Scalar( 0, 255, 0 ), 2);
 					}
 				}
 			}
 		}
 
-		//std::cout << boards.size() << std::endl;
-
 		//calcF1(boards, filename);
-
-	//line(originalImage, Point(width, crosswidth), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
-	//line(originalImage, Point(0, crossy), Point(crossx, 0), Scalar( 0, 255, 0 ), 1);
-	// line(originalImage, Point(0, crossy), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
-	// line(originalImage, Point(crossx, 0), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
-	// line(originalImage, Point(crossx, 0), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
 	return originalImage;
 }
 
