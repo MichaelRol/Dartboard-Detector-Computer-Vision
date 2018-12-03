@@ -59,7 +59,9 @@ int main( int argc, const char** argv ) {
 	string outputname = filename.substr(10, filename.size() - 14);
 	//imwrite( "Detected/"+outputname+".jpg", output );
 
-	imwrite( "Detected/"+outputname+".jpg", detected );
+	imwrite( "Detected/"+ outputname + ".jpg", detected );
+	imwrite("Hough/" + outputname + ".jpg", houghSpace );
+	imwrite("Lines/" + outputname + ".jpg", gradMag );
 
 	return 0;
 }
@@ -200,7 +202,7 @@ Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
 
 	int width = gradMag.size().width;
 	int height = gradMag.size().height;
-	Mat houghSpace(2*(height+width), 180, CV_32SC1, Scalar(0));
+	Mat houghSpace(2*(height+width), 360, CV_32SC1, Scalar(0));
 	Mat output;
 	double pi = 3.1415926535897;
 
