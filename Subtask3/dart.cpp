@@ -79,11 +79,11 @@ Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
 		for (int rho = 0; rho < houghSpace.size().height; rho++) {
 			if (houghSpace.at<int>(rho, degrees) > 170){
 				count++;
-				int crossx = (rho-width-height)/cos(degrees*pi/180);
-				int crossy = (rho-width-height)/sin(degrees*pi/180);
-				int crosswidth = ((rho-width-height)-width*cos(degrees*pi/180))/sin(degrees*pi/180);
-				int crossheight = ((rho-width-height)-height*sin(degrees*pi/180))/cos(degrees*pi/180);
-				line(originalImage, Point(0, crossy), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
+				// int crossx = (rho-width-height)/cos(degrees*pi/180);
+				// int crossy = (rho-width-height)/sin(degrees*pi/180);
+				// int crosswidth = ((rho-width-height)-width*cos(degrees*pi/180))/sin(degrees*pi/180);
+				// int crossheight = ((rho-width-height)-height*sin(degrees*pi/180))/cos(degrees*pi/180);
+				// line(originalImage, Point(0, crossy), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
 			}
 		}
 	}
@@ -336,7 +336,7 @@ void calcF1(std::vector<Rect> faces, string csv) {
 
 	double numfaces = 0;
 	double truepositives = 0;
-  double falsenegatives = 0;
+  	double falsenegatives = 0;
 	double falsepositives = 0;
 
 	while(ip.good()) {
