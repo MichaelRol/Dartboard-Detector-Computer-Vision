@@ -28,7 +28,7 @@ Mat getGradDir(Mat frame_gray);
 Mat prepImage(Mat frame);
 Mat generateLineHoughSpace(Mat gradMag, Mat gradDir);
 Mat generateCircleHoughSpace(Mat gradMag, Mat gradDir);
-int* detectBoards(Mat originalImage, Mat houghSpace, int* buckets);
+Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets);
 Mat drawCircles (Mat originalImage, Mat houghSpace);
 /** Global variables */
 String cascade_name = "cascade.xml";
@@ -46,38 +46,32 @@ int main( int argc, const char** argv ) {
 	// 3. Detect Faces and Display Result
 	//detectAndDisplay( frame , argv[1]);
 
-    Mat prepedImage = prepImage(frame);
+  Mat prepedImage = prepImage(frame);
 	Mat gradMag = getGradMag(prepedImage);
 	Mat gradDir = getGradDir(prepedImage);
 
-    Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
+  Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
 	int buckets[20*20] = {0};
-	int* boards = detectBoards(frame, houghSpace, buckets);
-	
-	for (int x = 0; x < 20; x++) {
-		for (int y = 0; y < 20; y++) {
-			if (boards[x*20+y] > 20) {
-				cout << "X: " << x << " Y: " << y << endl;
-			}
-		}
-	}
+	Mat detected = detectBoards(frame, houghSpace, buckets);
 
 	// 4. Save Result Image
 	string filename = argv[1];
 	string outputname = filename.substr(10, filename.size() - 14);
 	//imwrite( "Detected/"+outputname+".jpg", output );
 
-	imwrite( "Lines/"+outputname+".jpg", gradMag );
+	imwrite( "Detected/"+outputname+".jpg", detected );
 
 	return 0;
 }
 
-int* detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
+Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
 
 	double pi = 3.1415926535897;
-  	int width = originalImage.size().width;
+  int width = originalImage.size().width;
 	int height = originalImage.size().height;
-  	int count = 0;
+  int count = 0;
+	int bucketavgx[20*20] = {0};
+	int bucketavgy[20*20] = {0};
 	int bucketsizex = floor(width/20);
 	int bucketsizey = floor(height/20);
 
@@ -93,7 +87,7 @@ int* detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
 			}
 		}
 	}
-	cout << count << endl;
+	
 	int linearray[count*2];
 	int counted = 0;
 	for (int degrees = 0; degrees < houghSpace.size().width; degrees++) {
@@ -128,6 +122,9 @@ int* detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
 					for (int buckety = 0; buckety < 20; buckety++) {
 						if (x >= bucketx * bucketsizex && x < (bucketx+1)*bucketsizex && y >= buckety * bucketsizey && y < (buckety+1)*bucketsizey) {
 							buckets[bucketx*20+buckety]++;
+							bucketavgx[bucketx*20+buckety] = (bucketavgx[bucketx*20+buckety]*(buckets[bucketx*20+buckety]-1) + x)/buckets[bucketx*20+buckety];
+							bucketavgy[bucketx*20+buckety] = (bucketavgy[bucketx*20+buckety]*(buckets[bucketx*20+buckety]-1) + y)/buckets[bucketx*20+buckety];
+
 						}
 					}
 				}
@@ -135,18 +132,76 @@ int* detectBoards(Mat originalImage, Mat houghSpace, int* buckets) {
 		}
 	}
 
+		// for (int x = 0; x < 20; x++) {
+		// 	for (int y = 0; y < 20; y++) {
+		// 		if (buckets[x*20+y] > 20) {
+		// 			cout << "X: " << bucketavgx[x*20+y] << " Y: " << bucketavgy[x*20+y] << endl;
+		// 		}
+		// 	}
+		// }
 
+		std::vector<Rect> boards;
+		Mat frame_gray;
+
+		// 1. Prepare Image by turning it into Grayscale and normalising lighting
+		cvtColor( originalImage, frame_gray, CV_BGR2GRAY );
+		equalizeHist( frame_gray, frame_gray );
+
+		// 2. Perform Viola-Jones Object Detection
+		cascade.detectMultiScale( frame_gray, boards, 1.1, 1, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50), Size(500,500) );
+		// for( int i = 0; i < boards.size(); i++ ) {
+	 	// 	rectangle(originalImage, Point(boards[i].x, boards[i].y), Point(boards[i].x + boards[i].width, boards[i].y + boards[i].height), Scalar( 0, 255, 0 ), 2);
+    // }
+		// 4. Draw box around faces found
+
+		for(int x = 0; x < 20; x++){
+			for(int y = 0; y < 20; y++){
+				for( int i = 0; i < boards.size(); i++ ) {
+					int topleftx = boards[i].x;
+					int toplefty = boards[i].y;
+					int bottomrightx = boards[i].x + boards[i].width;
+					int bottomrighty = boards[i].y + boards[i].height;
+
+					if(bucketavgx[x*20+y] > topleftx && bucketavgx[x*20+y] < topleftx + bottomrightx \
+					&& bucketavgy[x*20+y] > toplefty && bucketavgy[x*20+y] < toplefty + bottomrighty) {
+						rectangle(originalImage, Point(boards[i].x, boards[i].y), Point(boards[i].x + boards[i].width, boards[i].y + boards[i].height), Scalar( 0, 255, 0 ), 2);
+					}
+				}
+			}
+		}
+
+		//std::cout << boards.size() << std::endl;
+
+		//calcF1(boards, filename);
 
 	//line(originalImage, Point(width, crosswidth), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
 	//line(originalImage, Point(0, crossy), Point(crossx, 0), Scalar( 0, 255, 0 ), 1);
 	// line(originalImage, Point(0, crossy), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
 	// line(originalImage, Point(crossx, 0), Point(crossheight, height), Scalar( 0, 255, 0 ), 1);
 	// line(originalImage, Point(crossx, 0), Point(width, crosswidth), Scalar( 0, 255, 0 ), 1);
+	return originalImage;
+}
 
+void detectAndDisplay( Mat frame , string filename) {
+	std::vector<Rect> faces;
+	Mat frame_gray;
 
+	// 1. Prepare Image by turning it into Grayscale and normalising lighting
+	cvtColor( frame, frame_gray, CV_BGR2GRAY );
+	equalizeHist( frame_gray, frame_gray );
 
+	// 2. Perform Viola-Jones Object Detection
+	cascade.detectMultiScale( frame_gray, faces, 1.1, 1, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50), Size(500,500) );
 
-	return buckets;
+	// 3. Print number of Faces found
+	std::cout << faces.size() << std::endl;
+
+	// 4. Draw box around faces found
+	for( int i = 0; i < faces.size(); i++ ) {
+		rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 0, 255, 0 ), 2);
+	}
+	calcF1(faces, filename);
+
 }
 
 Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
@@ -176,29 +231,6 @@ Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
 	imwrite( "hough.jpg", output );
   return output;
 }
-
-// Mat generateCircleHoughSpace(Mat gradMag, Mat gradDir) {
-//
-//   int rmax = 200;
-// 	int rmin = 20;
-//
-// 	Mat houghSpace(2*(height+width), 360, CV_32SC1, Scalar(0));
-//
-//   for (int x = 0; x < gradMag.size().width; x++) {
-// 		for (int y = 0; y < gradMag.size().height; y++) {
-// 			for (int r = rmin; r < rmax; r++){
-// 				int x0 = round(x + r * sin(gradDir.at<float>(y, x)));
-// 				int y0 = round(y + r * cos(gradDir.at<float>(y, x)));
-// 				if (x0 > 0 && y0 > 0 && x0 < gradMag.size().width && y0 < gradMag.size().height){
-//
-// 				}
-// 			}
-//
-// 		}
-// 	}
-//
-// }
-
 
 Mat prepImage(Mat frame) {
 
@@ -278,27 +310,6 @@ Mat getGradMag(Mat frame_gray) {
 }
 
 /** @function detectAndDisplay */
-void detectAndDisplay( Mat frame , string filename) {
-	std::vector<Rect> faces;
-	Mat frame_gray;
-
-	// 1. Prepare Image by turning it into Grayscale and normalising lighting
-	cvtColor( frame, frame_gray, CV_BGR2GRAY );
-	equalizeHist( frame_gray, frame_gray );
-
-	// 2. Perform Viola-Jones Object Detection
-	cascade.detectMultiScale( frame_gray, faces, 1.1, 1, 0|CV_HAAR_SCALE_IMAGE, Size(50, 50), Size(500,500) );
-
-       // 3. Print number of Faces found
-	std::cout << faces.size() << std::endl;
-
-       // 4. Draw box around faces found
-	for( int i = 0; i < faces.size(); i++ ) {
-		rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar( 0, 255, 0 ), 2);
-	}
-  calcF1(faces, filename);
-
-}
 
 bool checkMatch(string topleftx, string toplefty, string bottomrightx, string bottomrighty, Rect		 face) {
   if (abs(stoi(topleftx) - face.x) < 100 && abs(stoi(toplefty) - face.y) < 100 \
