@@ -236,7 +236,7 @@ Mat prepImage(Mat frame) {
 
 	  Mat frame_gray;
 	  Mat holder;
-		GaussianBlur( frame, hodler, Size(3,3), 0, 0, BORDER_DEFAULT );
+		GaussianBlur( frame, holder, Size(3,3), 0, 0, BORDER_DEFAULT );
 		cvtColor( holder, frame_gray, CV_BGR2GRAY );
 
 		return frame_gray;
