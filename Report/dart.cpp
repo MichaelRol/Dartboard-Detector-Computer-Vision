@@ -299,7 +299,7 @@ bool checkMatch(string topleftx, string toplefty, string bottomrightx, string bo
 
 void calcF1(std::vector<Rect> boards, string csv) {
 
-	string subname = csv.substr(14, csv.size() - 18);
+	string subname = csv.substr(0, csv.size() - 18);
 	string csvname = "CSVs/boardcoords" + subname + ".csv";
 
 	ifstream ip(csvname);
