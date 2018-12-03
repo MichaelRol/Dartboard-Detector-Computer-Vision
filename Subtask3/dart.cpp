@@ -56,12 +56,8 @@ int main( int argc, const char** argv ) {
 	Mat detected = detectBoards(frame, houghSpace, buckets, filename);
 
 	// 4. Save Result Image
-	string outputname = filename.substr(10, filename.size() - 14);
-	//imwrite( "Detected/"+outputname+".jpg", output );
 
-	imwrite( "Detected/"+ outputname + ".jpg", detected );
-	imwrite("Hough/" + outputname + ".jpg", houghSpace );
-	imwrite("Lines/" + outputname + ".jpg", gradMag );
+	imwrite( "detected.jpg", detected );
 
 	return 0;
 }
