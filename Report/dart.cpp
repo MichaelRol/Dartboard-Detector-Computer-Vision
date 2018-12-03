@@ -301,7 +301,7 @@ void calcF1(std::vector<Rect> boards, string csv) {
 
 	string subname = csv.substr(4, csv.size() - 8);
 	string csvname = "CSVs/boardcoords" + subname + ".csv";
-        cout << csvname << endl;
+        
 	ifstream ip(csvname);
 
 	if(!ip.is_open()) std::cout << "Error; File Open" << '\n';
@@ -339,7 +339,7 @@ void calcF1(std::vector<Rect> boards, string csv) {
 
 	cout << "True number of boards: " << numboards << endl << "True Positives: " \
 	          << truepositives << endl << "TPR: " << truepositives/numboards << endl \
-						<< "F1 Score: " << f1score << endl << boards.size() << endl;
+						<< "F1 Score: " << f1score << endl;
 
 	ip.close();
 
