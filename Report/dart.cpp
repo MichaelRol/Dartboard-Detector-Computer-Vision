@@ -299,9 +299,9 @@ bool checkMatch(string topleftx, string toplefty, string bottomrightx, string bo
 
 void calcF1(std::vector<Rect> boards, string csv) {
 
-	string subname = csv.substr(0, csv.size() - 4);
+	string subname = csv.substr(4, csv.size() - 8);
 	string csvname = "CSVs/boardcoords" + subname + ".csv";
-
+        cout << csvname << endl;
 	ifstream ip(csvname);
 
 	if(!ip.is_open()) std::cout << "Error; File Open" << '\n';
