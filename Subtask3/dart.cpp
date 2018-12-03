@@ -46,11 +46,11 @@ int main( int argc, const char** argv ) {
 	// 3. Detect Faces and Display Result
 	//detectAndDisplay( frame , argv[1]);
 
-  Mat prepedImage = prepImage(frame);
+    Mat prepedImage = prepImage(frame);
 	Mat gradMag = getGradMag(prepedImage);
 	Mat gradDir = getGradDir(prepedImage);
 
-  Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
+    Mat houghSpace = generateLineHoughSpace(gradMag, gradDir);
 	int buckets[20*20] = {0};
 	Mat detected = detectBoards(frame, houghSpace, buckets);
 
@@ -235,8 +235,9 @@ Mat generateLineHoughSpace(Mat gradMag, Mat gradDir) {
 Mat prepImage(Mat frame) {
 
 	  Mat frame_gray;
-		GaussianBlur( frame, frame, Size(3,3), 0, 0, BORDER_DEFAULT );
-		cvtColor( frame, frame_gray, CV_BGR2GRAY );
+	  Mat holder;
+		GaussianBlur( frame, hodler, Size(3,3), 0, 0, BORDER_DEFAULT );
+		cvtColor( holder, frame_gray, CV_BGR2GRAY );
 
 		return frame_gray;
 }
