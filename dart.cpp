@@ -175,7 +175,7 @@ Mat detectBoards(Mat originalImage, Mat houghSpace, int* buckets, string filenam
 		}
 	}
 
-	calcF1(goodBoards, filename);
+	//calcF1(goodBoards, filename);
 	return originalImage;
 }
 
@@ -304,7 +304,7 @@ bool checkMatch(string topleftx, string toplefty, string bottomrightx, string bo
 void calcF1(std::vector<Rect> boards, string csv) {
 
 	string subname = csv.substr(14, csv.size() - 18);
-	string csvname = "CSVs/boardcoords" + subname + ".csv";
+	string csvname = "darts.csv";
 
 	ifstream ip(csvname);
 
